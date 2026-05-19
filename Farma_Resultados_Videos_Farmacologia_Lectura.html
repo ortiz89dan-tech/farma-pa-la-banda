@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farma pa la Banda - Resultados Videos Farmacología</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .header h1 { font-size: 28px; margin-bottom: 0.5rem; }
+    .header h2 { font-size: 18px; font-weight: 400; margin-top: 0.5rem; opacity: 0.95; margin-bottom: 0.5rem; }
+    .header p { font-size: 13px; opacity: 0.9; }
+    .container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+    .info-box { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 1rem; border-radius: 6px; margin-bottom: 2rem; font-size: 13px; color: #1565c0; }
+    .card { background: white; border: 0.5px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .card-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 1rem; }
+    .score-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1rem; }
+    .score-item { }
+    .score-label { font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 500; }
+    .score-value { font-size: 22px; font-weight: 600; color: #667eea; }
+    .total-box { background: #f0f3ff; border-left: 4px solid #667eea; padding: 1rem; border-radius: 6px; text-align: center; margin-top: 1rem; }
+    .total-label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+    .total-value { font-size: 32px; font-weight: 600; color: #667eea; }
+    .metrics-section { border-top: 0.5px solid #e0e0e0; padding-top: 1rem; margin-top: 1rem; background: #fffaed; padding: 1rem; border-radius: 6px; border-left: 4px solid #ff9800; }
+    .metrics-title { font-size: 12px; color: #e65100; margin-bottom: 0.8rem; font-weight: 600; text-transform: uppercase; }
+    .metric-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 0.8rem; }
+    .metric-item { background: white; padding: 0.8rem; border-radius: 4px; text-align: center; border: 0.5px solid #e0e0e0; }
+    .metric-item-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+    .metric-item-value { font-size: 18px; font-weight: 600; color: #667eea; }
+    .engagement-score { background: #f0f3ff; padding: 1rem; border-radius: 6px; text-align: center; border: 0.5px solid #667eea; margin-top: 0.8rem; }
+    .engagement-label { font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .engagement-value { font-size: 22px; font-weight: 600; color: #667eea; }
+    .bot-indicator { padding: 1rem; border-radius: 6px; font-size: 13px; font-weight: 600; text-align: center; margin-top: 1rem; border: 2px solid; }
+    .bot-genuine { background: #e8f5e9; color: #1b5e20; border-color: #4caf50; }
+    .bot-warning { background: #fff3e0; color: #e65100; border-color: #ff9800; }
+    .bot-suspicious { background: #ffebee; color: #b71c1c; border-color: #f44336; }
+    .comments-section { border-top: 0.5px solid #e0e0e0; padding-top: 1rem; margin-top: 1rem; }
+    .comments-title { font-size: 12px; color: #666; margin-bottom: 0.6rem; font-weight: 600; text-transform: uppercase; }
+    .comments-box { background: #f9f9f9; padding: 0.8rem; border-radius: 6px; border-left: 4px solid #667eea; font-size: 12px; line-height: 1.5; color: #555; word-wrap: break-word; white-space: pre-wrap; }
+    .empty { text-align: center; color: #999; padding: 3rem 1rem; font-size: 14px; }
+    .medal { font-size: 20px; margin-right: 0.5rem; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Farma pa la Banda</h1>
+    <h2>Farmacología</h2>
+    <p>Resultados de Evaluación de Videos</p>
+  </div>
+
+  <div class="container">
+    <div class="info-box">
+      ℹ️ Esta es una visualización de solo lectura. Los resultados se actualizan automáticamente conforme se ingresan las evaluaciones.
+    </div>
+
+    <div id="dashboardList"></div>
+    <div id="emptyDash" class="empty" style="display: none;">Sin datos aún. Los resultados aparecerán aquí.</div>
+  </div>
+
+  <script>
+    function calculateEngagementMetrics(team) {
+      const completion = 100 - team.omision;
+      const engagementRate = team.views > 0 ? ((team.likes + team.compartidos + team.reposts) / team.views * 100) : 0;
+      const virality = team.views > 0 ? ((team.compartidos + team.reposts) / team.views * 100) : 0;
+      
+      const genuineScore = (completion * 0.5 + engagementRate * 0.5);
+      
+      let botStatus = '🟢 Genuino';
+      if (engagementRate > 10 && completion < 40) {
+        botStatus = '🔴 Sospechoso';
+      } else if (engagementRate > 5 && completion < 50) {
+        botStatus = '🟡 Posibles bots';
+      }
+      
+      return {
+        completion: completion.toFixed(1),
+        engagementRate: engagementRate.toFixed(1),
+        virality: virality.toFixed(1),
+        genuineScore: genuineScore.toFixed(1),
+        botStatus: botStatus
+      };
+    }
+
+    function render() {
+      const teams = JSON.parse(localStorage.getItem('farmaVideos')) || [];
+      const dash = document.getElementById('dashboardList');
+      const empty = document.getElementById('emptyDash');
+
+      if (teams.length === 0) {
+        dash.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      const sorted = [...teams].sort((a, b) => b.views - a.views);
+
+      dash.innerHTML = sorted.map((t, idx) => {
+        const total = (t.claridad + t.precision + t.creatividad + t.produccion).toFixed(1);
+        const metrics = calculateEngagementMetrics(t);
+        const medals = ['🥇', '🥈', '🥉'];
+
+        let botClass = 'bot-genuine';
+        if (metrics.botStatus.includes('Sospechoso')) {
+          botClass = 'bot-suspicious';
+        } else if (metrics.botStatus.includes('Posibles')) {
+          botClass = 'bot-warning';
+        }
+
+        return `
+          <div class="card">
+            <div class="card-title">
+              ${idx < 3 ? `<span class="medal">${medals[idx]}</span>` : ''}${t.name}
+            </div>
+
+            <div class="score-row">
+              <div class="score-item">
+                <div class="score-label">Claridad</div>
+                <div class="score-value">${t.claridad.toFixed(1)}/3</div>
+              </div>
+              <div class="score-item">
+                <div class="score-label">Precisión</div>
+                <div class="score-value">${t.precision.toFixed(1)}/3</div>
+              </div>
+            </div>
+
+            <div class="score-row">
+              <div class="score-item">
+                <div class="score-label">Creatividad</div>
+                <div class="score-value">${t.creatividad.toFixed(1)}/3</div>
+              </div>
+              <div class="score-item">
+                <div class="score-label">Producción</div>
+                <div class="score-value">${t.produccion.toFixed(1)}/3</div>
+              </div>
+            </div>
+
+            <div class="total-box">
+              <div class="total-label">Puntuación Total</div>
+              <div class="total-value">${total}/12</div>
+            </div>
+
+            <div class="metrics-section">
+              <div class="metrics-title">Métricas de Engagement</div>
+              
+              <div class="metric-box">
+                <div class="metric-item">
+                  <div class="metric-item-label">Vistas</div>
+                  <div class="metric-item-value">${t.views.toLocaleString()}</div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-item-label">Completion</div>
+                  <div class="metric-item-value">${metrics.completion}%</div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-item-label">Engagement</div>
+                  <div class="metric-item-value">${metrics.engagementRate}%</div>
+                </div>
+              </div>
+
+              <div class="engagement-score">
+                <div class="engagement-label">Genuine Engagement Score</div>
+                <div class="engagement-value">${metrics.genuineScore}</div>
+              </div>
+
+              <div class="bot-indicator ${botClass}">
+                <strong>Estado de Autenticidad:</strong> ${metrics.botStatus}
+              </div>
+            </div>
+
+            <div class="comments-section">
+              <div class="comments-title">Comentarios</div>
+              <div class="comments-box">
+                ${t.comentarios ? t.comentarios : '<span style="color: #999; font-style: italic;">Sin comentarios</span>'}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Actualizar cada 2 segundos para ver cambios en tiempo real
+    setInterval(render, 2000);
+    render();
+  </script>
+</body>
+</html>
